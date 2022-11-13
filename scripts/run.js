@@ -1,10 +1,26 @@
 const main = async () => {
 
     //The Hardhat Runtime Environment, or HRE for short, is an object containing all the functionality that Hardhat exposes when running a task, test or script. In reality, Hardhat is the HRE.
+    const [owner, randomPerson] = await hre.ethers.getSigners();
     const waveContractFactory = await hre.ethers.getContractFactory("WavePortal");
+    
     const waveContract = await waveContractFactory.deploy();
     await waveContract.deployed();
+    
     console.log("Contract deployed to:", waveContract.address);
+    console.log("Contract deployed by:", owner.address);
+
+    await waveContract.getTotalWaves();
+
+    const firstWaveTxn = await waveContract.wave();
+    await firstWaveTxn.wait();
+
+    await waveContract.getTotalWaves();
+
+    const secondWaveTxn = await waveContract.connect(randomPerson).wave();
+    await secondWaveTxn.wait();
+
+    await waveContract.getTotalWaves();
 };
   
 const runMain = async () => {
